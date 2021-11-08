@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "ottopy/extension": true
+  }
+}
