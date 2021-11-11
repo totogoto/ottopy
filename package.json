@@ -1,6 +1,6 @@
 {
   "name": "ottopy",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A configurable maze library",
   "keywords": [
     "jupyter",
@@ -13,9 +13,9 @@
     "dist/*.js",
     "css/*.css"
   ],
-  "homepage": "https://gitlab.com/SixerJobs/ottopy",
+  "homepage": "https://github.com/totogoto/ottopy",
   "bugs": {
-    "url": "https://gitlab.com/SixerJobs/ottopy/issues"
+    "url": "https://github.com/totogoto/ottopy/issues"
   },
   "license": "BSD-3-Clause",
   "author": {
@@ -26,7 +26,7 @@
   "types": "./lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/SixerJobs/ottopy"
+    "url": "https://github.com/totogoto/ottopy"
   },
   "scripts": {
     "build": "yarn run build:lib && yarn run build:nbextension && yarn run build:labextension:dev",

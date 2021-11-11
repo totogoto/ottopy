@@ -1,5 +1,5 @@
 :root {
-  --min-container-height: 530px;
+  --min-container-height: 300px;
 }
 #container {
   position: relative;
@@ -11,7 +11,7 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.non-floating {
+.floating {
   position: absolute;
   cursor: move;
 }
@@ -28,27 +28,25 @@
 
 .output-header {
   background-color: #aaa;
-  height: 20px;
+  height: 30px;
   width: 0px;
-}
-
-.output-actions {
-  float: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 5px;
 }
 
 .output-action-bttn {
-  border: none;
+  border: 1px solid #fff;
+  height: 25px;
+  width: 15px;
+  font-size: 1.25em;
+  font-weight: bold;
   border-radius: 50%;
-  margin: 3px;
   background-color: #fff;
+  color: #888;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
   cursor: pointer;
-}
-.output-action-bttn:hover {
-  transform: scale(1.01);
-  box-shadow: 0 6px 4px darkgray;
 }
 
 .bttn-txt {
@@ -65,8 +63,7 @@
 .ttgt-wrapper {
   position: absolute;
   background-color: #fff;
-  border-left: 1px solid #aaa;
-  border-top: 1px solid #aaa;
+
   z-index: 105;
 }
 

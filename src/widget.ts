@@ -222,6 +222,10 @@ export class MazeView extends DOMWidgetView {
     return this.world_model.success_msg(msg);
   };
 
+  error = (msg: string[]) => {
+    return $('.output-header').css({ backgroundColor: '#f8d7da' });
+  };
+
   show_message = (
     msg: string,
     waitFor: number = 1,
@@ -255,10 +259,10 @@ export class MazeView extends DOMWidgetView {
 
           $('.output-action-bttn').on('click', function () {
             console.log('clicked button');
-            if ($(this).html() == '-') {
-              $(this).html('+');
+            if ($(this).html() == 'ᐁ') {
+              $(this).html('ᐅ');
             } else {
-              $(this).html('-');
+              $(this).html('ᐁ');
             }
             $('.ttgt-wrapper').slideToggle();
           });
@@ -280,7 +284,7 @@ export class MazeView extends DOMWidgetView {
     return `
       <div class="output-header">
         <div class="output-actions">
-          <button class="output-action-bttn">-</button>
+          <button class="output-action-bttn">ᐁ</button>
         </div>
       </div>
     `;

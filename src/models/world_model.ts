@@ -334,7 +334,7 @@ export class WorldModel {
 
   success_msg(msg: string | string[]) {
     let arr: string[] = [];
-
+    $('.output-header').css({ backgroundColor: '#d4edda' });
     return this.alert(arr.concat(msg).join(','), 'success');
   }
 
