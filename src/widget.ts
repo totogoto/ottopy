@@ -160,7 +160,32 @@ export class MazeView extends DOMWidgetView {
       pending_goals,
       drop_goals
     );
-    return Promise.resolve('init done');
+
+    return this.sleepUntil(() => {
+      return (
+        this.world_model &&
+        this.world_model.robots &&
+        this.world_model.robots[0] &&
+        this.world_model.robots[0].node
+      );
+    }, 3000);
+  };
+
+  sleepUntil = (f: Function, timeoutMs: number) => {
+    return new Promise((resolve, reject) => {
+      let timeWas: Date = new Date();
+      let wait = setInterval(function () {
+        if (f()) {
+          clearInterval(wait);
+          resolve('robo init done');
+        } else if (new Date().getTime() - timeWas.getTime() > timeoutMs) {
+          // Timeout
+
+          clearInterval(wait);
+          reject('error in robo init');
+        }
+      }, 20);
+    });
   };
 
   halt = () => {

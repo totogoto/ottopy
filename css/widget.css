@@ -73,7 +73,7 @@
 
 .output-header-msg {
   display: flex;
-  width: 80%;
+  width: 70%;
   margin: 5px;
   padding-left: 20px;
 }
@@ -109,6 +109,8 @@
 .output-actions {
   display: flex;
   flex: 1;
+  width: 30%;
+  min-width: 200px;
   justify-content: flex-end;
 }
 
