@@ -76,10 +76,7 @@ export class WorldModel {
       bg: Konva.Layer;
     };
   };
-
-  constructor() {
-    this.init_ui();
-  }
+  current_run: JQuery<HTMLElement>;
 
   init(
     config: WorldConfig,
@@ -137,92 +134,130 @@ export class WorldModel {
     this.messages = messages;
     this.flags = flags;
 
-    return this.init_with_id(this.ui_id);
+    this.init_with_id(this.ui_id);
+  }
+
+  incrementZoom() {
+    let classess = this.getZoomClasses();
+    let classessToRemove = classess.join(' ');
+    let nextClass = Math.max(...classess.map((x) => parseInt(x.split('-')[1])));
+
+    if (nextClass < 10) {
+      $('#outputArea')
+        .removeClass(classessToRemove)
+        .addClass(`zoom-${nextClass + 1}`);
+    }
+  }
+
+  decrementZoom() {
+    let classess = this.getZoomClasses();
+    let classessToRemove = classess.join(' ');
+    let nextClass = Math.min(...classess.map((x) => parseInt(x.split('-')[1])));
+
+    if (nextClass > 1) {
+      $('#outputArea')
+        .removeClass(classessToRemove)
+        .addClass(`zoom-${nextClass - 1}`);
+    }
+  }
+
+  getZoomClasses() {
+    let $outputArea = $('#outputArea');
+    let classess = $outputArea.attr('class')?.split(' ') || ['zoom-10'];
+    return classess.filter((x) => x.startsWith('zoom-'));
+  }
+
+  init_output_window() {
+    let $outputArea = $('#outputArea');
+
+    let $currentRun = this.current_run;
+    $currentRun.append(this.skeleton());
+    let that = this;
+    //button actions
+    $('.output-action-toggle', $currentRun).on('click', function () {
+      console.log('clicked button');
+      if ($(this).html() == 'ᐁ') {
+        $(this).html('ᐅ');
+      } else {
+        $(this).html('ᐁ');
+      }
+      $('.grid-slider', $currentRun).slideToggle();
+    });
+
+    $('.output-action-zoom-in', $currentRun).on('click', function () {
+      that.incrementZoom();
+    });
+
+    $('.output-action-zoom-out', $currentRun).on('click', function () {
+      that.decrementZoom();
+    });
+
+    //Draggble $current_run
+    if (this.config.floating && !this.draggable) {
+      draggable($outputArea[0]);
+      this.draggable = true;
+    }
+
+    if (!this.config.floating) {
+      $outputArea[0].onmousedown = null;
+    }
   }
 
   init_with_id(ui_id: string) {
+    let $outputArea = $('#outputArea');
+    this.current_run = $(`#${this.ui_id}`, $outputArea);
+
     //clean up
-    let elem = $(`#${this.ui_id}`);
-    let old_grid = $('.konva-grid .content').not(elem);
+    $('.run_output', $outputArea).not(this.current_run).remove();
 
-    if (!!old_grid) {
-      old_grid.remove();
+    if (this.current_run.length === 0) {
+      console.log('in the run');
+      this.current_run = $(`<div id=${this.ui_id} class='run_output'> </div>`);
+      $outputArea.append(this.current_run);
+
+      this.init_output_window();
+      this.draw_canvas();
     }
-    if (elem.length === 0) {
-      return $('.konva-grid')
-        .append($('<div>', { id: this.ui_id, class: ' .content' }))
-        .promise()
-        .then((elem) => {
-          console.log('drawing full canvas');
-          return this.draw_canvas();
-        })
-        .then(() => {
-          let that = this;
-          $(function () {
-            if (that.config.floating && !that.draggable) {
-              draggable($('#outputArea')[0]);
-              that.draggable = true;
-            }
-
-            if (!that.config.floating) {
-              $('#outputArea')[0].onmousedown = null;
-            }
-          });
-
-          $('#outputArea').css({
-            positon: 'absolute',
-            right: 0,
-            bottom: $('.ttgt-wrapper').height() || 0,
-          });
-          $('.output-header').css({
-            width: $('.ttgt-wrapper').width() || 0,
-          });
-        });
-    }
-    console.log(`#${this.ui_id} already exists returning`);
-    return elem.promise();
   }
 
   skeleton() {
     return `
-      <div id="container">
+      <div class="output-header clr-info">
+        <div class="output-header-msg"></div>
+        <div class="output-actions btn-group">
+          <button class="output-action-zoom-in">&plus;</button>
+          <button class="output-action-zoom-out">&minus;</button>
+          <button class="output-action-toggle">ᐁ</button>
+        </div>
+      </div>   
+      <div class="grid-slider">
         <div class="grid">
           <div class="stats">
             <div class="stats-item">
               <div class="stats-title">Taken Moves</div>
-              <div id="no_of_steps" class="stats-value">0</div> 
+              <div class="no_of_steps stats-value">0</div> 
             </div>
             <div class="stats-item">
               <div class="stats-title">current load</div>
-              <div id="id="current_load" class="stats-value">0</div> 
+              <div class="current_load stats-value">0</div> 
             </div>
             <div class="stats-item">
               <div class="stats-title">capacity</div>
-              <div id="capacity" class="stats-value">Unlimited</div> 
+              <div class="capacity stats-value">Unlimited</div> 
             </div>
           </div>
           <div class="konva-body">
-            <div class="alert"></div>
-            <div class="konva-grid" id="konva-grid"></div>
+            <div class="konva-grid"></div>
           </div>
         </div>
-        </div>
+      </div>
     `;
-  }
-
-  init_ui() {
-    $('.ttgt-wrapper').remove();
-    let wrapper = $('<div>', { class: 'ttgt-wrapper' }).append(
-      this.skeleton().trim()
-    );
-
-    this.wrapper = wrapper[0] as HTMLDivElement;
   }
 
   draw_canvas() {
     try {
       let stage = new Konva.Stage({
-        container: this.ui_id,
+        container: '.konva-grid',
         width: this.width + NUMBER_PADDING,
         height: this.height + NUMBER_PADDING,
       });
@@ -274,67 +309,31 @@ export class WorldModel {
     });
   }
 
-  draw_pending_instructions(
-    msgs = ['No Goal'],
-    color = 'black',
-    fontSize = 16
-  ) {
-    let msg_layer = this.ui.layers.msg;
-
-    let old_msg = this.ui.layers.msg?.find(`.instruction_msg`)[0];
-
-    if (old_msg) {
-      old_msg.destroy();
-    }
-
-    let msg = msgs.slice(0, 3).join('\n');
-    let rect_width = Math.max(msg_layer?.width() || 0, 200) - 70;
-    let text = new Konva.Text({
-      padding: 10,
-      text: msg,
-      x: 40,
-      y: 90,
-      align: 'left',
-      fill: color,
-      lineHeight: 1.2,
-      fontSize: fontSize,
-      width: rect_width,
-      name: 'instruction_msg-rect',
-    });
-
-    let rect = new Konva.Rect({
-      width: rect_width,
-      height: text.height(),
-      cornerRadius: 10,
-      stroke: 'black',
-      x: 40,
-      y: 90,
-      name: 'instruction_msg',
-    });
-    msg_layer?.add(rect);
-    msg_layer?.add(text);
-    msg_layer?.draw();
-  }
-
   alert(
     msg: string,
     type: 'info' | 'success' | 'danger' = 'info',
     waitFor: number = 3000
   ) {
-    return $('.alert')
-      .addClass(`alert-${type}`)
+    const classToRemove = ['info', 'success', 'danger']
+      .filter((x) => x !== type)
+      .map((x) => `clr-${x}`)
+      .join(' ');
+
+    $('.output-header', this.current_run)
+      .removeClass(classToRemove)
+      .addClass(`clr-${type}`);
+
+    return $('.output-header-msg', this.current_run)
       .text(msg)
       .css({ opacity: 1 })
       .animate({
         width: 'show',
         duration: waitFor,
-      })
-      .animate({ opacity: 0 }, waitFor);
+      });
   }
 
   success_msg(msg: string | string[]) {
     let arr: string[] = [];
-    $('.output-header').css({ backgroundColor: '#d4edda' });
     return this.alert(arr.concat(msg).join(','), 'success');
   }
 
@@ -417,6 +416,10 @@ export class WorldModel {
   }
 
   remove_object(x: number, y: number) {
+    if (!this.ui) {
+      return;
+    }
+
     let circle = this.ui.layers.main.find(`.obj-${x}-${y}-circle`)[0];
     let text = this.ui.layers.main.find(`.obj-${x}-${y}-text`)[0];
     let img = this.ui.layers.main.find(`.obj-${x}-${y}-img`)[0];

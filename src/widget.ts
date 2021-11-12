@@ -31,6 +31,7 @@ export class MazeModel extends DOMWidgetModel {
       _view_module_version: MazeModel.view_module_version,
       current_call: '{}',
       method_return: '{}',
+      zoom: 1,
       floating: false,
     };
   }
@@ -143,7 +144,7 @@ export class MazeView extends DOMWidgetView {
     pending_goals: any = [],
     drop_goals: any = []
   ) => {
-    return this.world_model.init(
+    this.world_model.init(
       world_config,
       ui_id,
       rows,
@@ -159,6 +160,7 @@ export class MazeView extends DOMWidgetView {
       pending_goals,
       drop_goals
     );
+    return Promise.resolve('init done');
   };
 
   halt = () => {
@@ -179,15 +181,30 @@ export class MazeView extends DOMWidgetView {
   };
 
   turn_left = (index: number) => {
-    return this.world_model.robots[index]?.turn_left();
+    return (
+      this.world_model &&
+      this.world_model.robots &&
+      this.world_model.robots.length > 0 &&
+      this.world_model.robots[index]?.turn_left()
+    );
   };
 
   set_trace = (index: number, color: string) => {
-    return this.world_model.robots[index]?.set_trace(color);
+    return (
+      this.world_model &&
+      this.world_model.robots &&
+      this.world_model.robots.length > 0 &&
+      this.world_model.robots[index]?.set_trace(color)
+    );
   };
 
   set_speed = (index: number, speed: number) => {
-    return this.world_model.robots[index]?.set_speed(speed);
+    return (
+      this.world_model &&
+      this.world_model.robots &&
+      this.world_model.robots.length > 0 &&
+      this.world_model.robots[index]?.set_speed(speed)
+    );
   };
 
   add_wall = (x: number, y: number, dir: string) => {
@@ -219,11 +236,15 @@ export class MazeView extends DOMWidgetView {
   };
 
   set_succes_msg = (msg: string[]) => {
-    return this.world_model.success_msg(msg);
+    return this.world_model && this.world_model.success_msg(msg);
   };
 
-  error = (msg: string[]) => {
-    return $('.output-header').css({ backgroundColor: '#f8d7da' });
+  error = (msg: string | string[]) => {
+    let arr: string[] = [];
+    return (
+      this.world_model &&
+      this.world_model.alert(arr.concat(msg).join(', '), 'danger')
+    );
   };
 
   show_message = (
@@ -241,52 +262,24 @@ export class MazeView extends DOMWidgetView {
 
     if (!this.world_model) {
       this.world_model = new WorldModel();
-
-      this.initOutput(this.world_model);
     }
+    this.initOutput();
   }
 
-  initOutput(world_model: WorldModel) {
+  initOutput() {
     if ($('#outputArea').length === 0) {
-      const parent =
+      const $parent =
         this.model.get('floating') || false ? $('body') : $(this.el);
-      parent
-        .append(this.outputBody())
-        .promise()
-        .then(() => {
-          $('#outputArea').append(this.outputHeader());
-          $('#outputArea').append(world_model.wrapper);
+      const zoom = (this.model.get('zoom') || 1) * 10;
 
-          $('.output-action-bttn').on('click', function () {
-            console.log('clicked button');
-            if ($(this).html() == 'ᐁ') {
-              $(this).html('ᐅ');
-            } else {
-              $(this).html('ᐁ');
-            }
-            $('.ttgt-wrapper').slideToggle();
-          });
-        });
-    } else {
-      $('#outputArea').append(world_model.wrapper);
+      let $outputArea = $('<div/>', {
+        id: 'outputArea',
+        class: this.model.get('floating')
+          ? `floating zoom-${zoom}`
+          : `non-floating zoom-${zoom}`,
+      });
+
+      $parent.append($outputArea);
     }
-  }
-
-  outputBody() {
-    let op = $('<div >', {
-      id: 'outputArea',
-      class: this.model.get('floating') ? 'floating' : 'non-floating',
-    });
-    return op;
-  }
-
-  outputHeader() {
-    return `
-      <div class="output-header">
-        <div class="output-actions">
-          <button class="output-action-bttn">ᐁ</button>
-        </div>
-      </div>
-    `;
   }
 }

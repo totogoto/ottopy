@@ -21,14 +21,14 @@ def get_robo_builder(**kwargs):
         fn = robo_fn.get(level, blank)
         fn(bot)
 
-    def generate_maze(level, floating=False):
+    def generate_maze(level, floating=False, zoom=1.0):
         world = load_world(level, floating=floating)
-        maze = Maze(world, floating=floating)
+        maze = Maze(world, floating=floating, zoom=zoom)
         bot_init(maze, level)
         return maze
 
-    def get_bot(level, floating=False):
-        maze = generate_maze(level, floating=floating)
+    def get_bot(level, floating=False, zoom=1):
+        maze = generate_maze(level, floating=floating, zoom=zoom)
         bot = maze.bot()
         return bot
 

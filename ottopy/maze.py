@@ -5,7 +5,7 @@
 # Distributed under the terms of the Modified BSD License.
 
 from ipywidgets import DOMWidget
-from traitlets import Unicode, Bool
+from traitlets import Unicode, Bool, Float
 from ._frontend import module_name, module_version
 from IPython.display import HTML as html_print
 from IPython.display import display
@@ -39,6 +39,7 @@ class Maze(DOMWidget):
     current_call = Unicode('{}').tag(sync=True)
     method_return = Unicode('{}').tag(sync=True)
     floating = Bool(False).tag(sync=True)
+    zoom = Float(1.0).tag(sync=True)
 
     def js_call(self, method_name, params):
         # print("calling method: " + method_name)
@@ -59,10 +60,11 @@ class Maze(DOMWidget):
                 {'method_name': 'halt', 'params': [], 'cb': cb, 'ui_id': self.model.ui_id})
             raise RuntimeError("Instruction Quota Exceeded")
 
-    def __init__(self, model, floating=False):
+    def __init__(self, model, floating=False, zoom=1):
         super(Maze, self).__init__()
         self.model = model
         self.floating = floating
+        self.zoom = zoom
         self.robots = [Robot(idx, x, self)
                        for idx, x in enumerate(self.model.robots)]
         # print_desc(self.model.description)
@@ -86,5 +88,5 @@ class Maze(DOMWidget):
         if val:
             self.js_call('set_succes_msg', ['🎉 Task Completed'])
         else:
-            self.js_call('error', ["One Or More Goal are Not Completed."])
+            self.js_call('error', ["🤭 One Or More Goal are Not Completed."])
         return val

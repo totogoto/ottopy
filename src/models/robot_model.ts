@@ -130,6 +130,9 @@ export class RobotModel {
   }
 
   move_to = (x: number, y: number) => {
+    if (!this.node) {
+      return Promise.resolve('bot is not created.');
+    }
     return new Promise((resolve) => {
       let [cx, cy] = this.cr2xy(x, y);
 
@@ -179,6 +182,9 @@ export class RobotModel {
   };
 
   turn_left = () => {
+    if (!this.node) {
+      return Promise.resolve('bot is not created.');
+    }
     return new Promise((resolve) => {
       this.orientation = mod(this.orientation + 1, 4);
       // let [cx, cy] = this.cr2xy(this.x, this.y);
