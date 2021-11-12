@@ -1,6 +1,6 @@
 {
   "name": "ottopy",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A configurable maze library",
   "keywords": [
     "jupyter",

@@ -88,7 +88,7 @@
   justify-self: flex-end;
   border: 1px solid #fff;
   height: 25px;
-  width: 15px;
+  max-width: 25px;
   font-size: 1.25em;
   font-weight: bold;
   background-color: #fff;
