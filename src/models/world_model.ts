@@ -77,6 +77,13 @@ export class WorldModel {
     };
   };
   current_run: JQuery<HTMLElement>;
+  onZoomChange: Function;
+  zoom_level: number;
+
+  constructor(zoom_level: number, onZoomChange: Function) {
+    this.onZoomChange = onZoomChange;
+    this.zoom_level = zoom_level;
+  }
 
   init(
     config: WorldConfig,
@@ -143,7 +150,8 @@ export class WorldModel {
     let nextClass = Math.max(...classess.map((x) => parseInt(x.split('-')[1])));
 
     if (nextClass < 10) {
-      $('#outputArea')
+      this.onZoomChange(nextClass / 10.0);
+      $('.grid-slider', this.current_run)
         .removeClass(classessToRemove)
         .addClass(`zoom-${nextClass + 1}`);
     }
@@ -153,16 +161,16 @@ export class WorldModel {
     let classess = this.getZoomClasses();
     let classessToRemove = classess.join(' ');
     let nextClass = Math.min(...classess.map((x) => parseInt(x.split('-')[1])));
-
+    this.onZoomChange(nextClass / 10.0);
     if (nextClass > 1) {
-      $('#outputArea')
+      $('.grid-slider', this.current_run)
         .removeClass(classessToRemove)
         .addClass(`zoom-${nextClass - 1}`);
     }
   }
 
   getZoomClasses() {
-    let $outputArea = $('#outputArea');
+    let $outputArea = $('.grid-slider', this.current_run);
     let classess = $outputArea.attr('class')?.split(' ') || ['zoom-10'];
     return classess.filter((x) => x.startsWith('zoom-'));
   }
@@ -230,7 +238,7 @@ export class WorldModel {
           <button class="output-action-toggle">ᐁ</button>
         </div>
       </div>   
-      <div class="grid-slider">
+      <div class="grid-slider zoom-${this.zoom_level * 10}">
         <div class="grid">
           <div class="stats">
             <div class="stats-item">

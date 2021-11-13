@@ -8,6 +8,7 @@ from .maze import Maze
 from .models import *
 from .lib import get_robo_builder
 from ._version import __version__, version_info
+print(f"ottopy version: {__version__}")
 
 
 def _jupyter_labextension_paths():

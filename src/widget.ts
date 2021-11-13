@@ -33,6 +33,7 @@ export class MazeModel extends DOMWidgetModel {
       method_return: '{}',
       zoom: 1,
       floating: false,
+      is_inited: false,
     };
   }
 
@@ -280,28 +281,42 @@ export class MazeView extends DOMWidgetView {
     return this.world_model.read_message(msg, waitFor);
   };
 
+  handle_zoom_level(zoom_level: number) {
+    this.model.set('zoom', zoom_level);
+    this.model.save_changes();
+  }
+
+  setInited() {
+    this.model.set('is_inited', true);
+    this.model.save_changes();
+  }
+
   render() {
-    //set methods
     this.method_changed();
     this.listenTo(this.model, 'change:current_call', this.method_changed);
 
     if (!this.world_model) {
-      this.world_model = new WorldModel();
+      this.world_model = new WorldModel(
+        this.model.get('zoom') || 1,
+        this.handle_zoom_level.bind(this)
+      );
     }
     this.initOutput();
+
+    //set methods
+    if (!this.model.get('is_inited')) {
+      this.setInited();
+    }
   }
 
   initOutput() {
     if ($('#outputArea').length === 0) {
       const $parent =
         this.model.get('floating') || false ? $('body') : $(this.el);
-      const zoom = (this.model.get('zoom') || 1) * 10;
 
       let $outputArea = $('<div/>', {
         id: 'outputArea',
-        class: this.model.get('floating')
-          ? `floating zoom-${zoom}`
-          : `non-floating zoom-${zoom}`,
+        class: this.model.get('floating') ? `floating ` : `non-floating `,
       });
 
       $parent.append($outputArea);

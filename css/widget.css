@@ -53,22 +53,15 @@
   zoom: 1;
 }
 
-/* .non-floating .ttgt-wrapper {
-  position: relative !important;
-}
-
-.non-floating #outputArea {
-  position: relative !important;
-  bottom: unset;
-  right: unset;
-} */
-
 .output-header {
   background-color: #aaa;
   height: 40px;
   display: flex;
   align-items: center;
   padding-right: 5px;
+  border: 2px solid;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
 }
 
 .output-header-msg {
@@ -95,6 +88,7 @@
   color: #888;
   text-align: center;
   cursor: pointer;
+  border-radius: 50%;
 }
 
 .btn-group button:not(:last-child) {
@@ -189,6 +183,7 @@
 
 .clr-success {
   color: #155724;
+  border-color: #155724;
   background-color: #d4edda;
 }
 
