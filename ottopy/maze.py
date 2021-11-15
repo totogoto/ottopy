@@ -53,17 +53,18 @@ class Maze(DOMWidget):
         zoom_level = self.zoom
 
     def js_call(self, method_name, params):
-        if self.is_inited == False:
-            self.js_call_q.append([method_name, copy.deepcopy(params)])
-        else:
-            # clean the old queue
-            if len(self.js_call_q) > 0:
-                while len(self.js_call_q) > 0:
-                    _call = self.js_call_q.pop(0)
-                    self.execute_js_call(method_name=_call[0], params=_call[1])
+        # if self.is_inited == False:
+        #     self.js_call_q.append([method_name, copy.deepcopy(params)])
+        # else:
+        #     # clean the old queue
+        #     if len(self.js_call_q) > 0:
+        #         while len(self.js_call_q) > 0:
+        #             _call = self.js_call_q.pop(0)
+        #             self.execute_js_call(method_name=_call[0], params=_call[1])
 
-            if method_name != "flush_js_q":
-                self.execute_js_call(method_name=method_name, params=params)
+            # if method_name != "flush_js_q":
+            
+        self.execute_js_call(method_name=method_name, params=params)
 
     def execute_js_call(self, method_name, params):
         cb = datetime.now().strftime('%f')
@@ -95,9 +96,12 @@ class Maze(DOMWidget):
 
         self.js_call_q = []
         self.init_time = datetime.now()
-
         display(self)
+        
+    
+    def redraw_all(self):
         self.model.render_all(self.js_call)
+
 
     def bot(self, bot_index=0):
         return self.robots[bot_index]

@@ -1,7 +1,9 @@
 from .maze import Maze
 from .models.world_model import WorldModel
-import asyncio
-import ipython_blocking
+import time
+import ipykernel
+MAJ_VERSION = int(ipykernel.__version__.split(".")[0])
+
 
 def get_robo_builder(**kwargs):
 
@@ -19,7 +21,6 @@ def get_robo_builder(**kwargs):
 
     def bot_init(maze, level):
         bot = maze.bot()
-        bot.set_trace('red')
         fn = robo_fn.get(level, blank)
         fn(bot)
 
@@ -33,30 +34,38 @@ def get_robo_builder(**kwargs):
         maze = generate_maze(level, floating=floating, zoom=zoom)
         bot = maze.bot()
         return bot
-    
 
-    async def wait_for_init(widget, sleep=0.05):
-        isInited = False
-        def on_inited(button):
-            nonlocal isInited
-            isInited = True
-            widget.unobserve(on_inited, 'is_inited')
-        
-        widget.observe(on_inited, 'is_inited')
-        async def runner():
-            ctx = ipython_blocking.CaptureExecution(replay=True)
-            with ctx:
-                while True:
-                    await asyncio.sleep(sleep)
-                    if isInited:
-                        break
-                    ctx.step() # handles all other messages that aren't 'execute_request' including widget value changes
-        return await asyncio.create_task(runner())
+    def wait_for_init(wait=3):
+        if MAJ_VERSION >= 6:
+            try: 
+                granularity = 0.1
+                kernel = get_ipython().kernel
+                for x in range(int(wait/granularity)):
+                    time.sleep(granularity)
+                    kernel.shell_stream.flush()
+                    if kernel.msg_queue.qsize() > 0 :
+                        sess = kernel.session.clone()
+                        for (_,_,i) in kernel.msg_queue._queue:
+                            idents, msg = sess.feed_identities(i[0], copy=False)
+                            t=sess.deserialize(msg, content=True, copy=False)
+                            if t.get("msg_type", "") == "comm_msg":
+                                return
+            except:
+                time.sleep(1.2)
+                print("timeout - some bot function may not work")
 
-    async def wait_for_bot(level, floating=False, zoom=None):
+        else: 
+            print("ipykernel is outdated . should be >=6.0")
+
+
+    def wait_for_bot(level, floating=False, zoom=None, wait=1):
         bot = get_bot(level, floating, zoom)
         maze = bot.world
-        await wait_for_init(maze)
+      
+        wait_for_init(wait)
+      
+        maze.redraw_all()
+        bot.set_trace('red')
         return bot
 
     return wait_for_bot

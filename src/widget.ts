@@ -287,6 +287,7 @@ export class MazeView extends DOMWidgetView {
   }
 
   setInited() {
+    console.log("widget inited set");
     this.model.set('is_inited', true);
     this.model.save_changes();
   }
