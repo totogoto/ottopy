@@ -287,7 +287,7 @@ export class MazeView extends DOMWidgetView {
   }
 
   setInited() {
-    console.log("widget inited set");
+    console.log('widget inited set');
     this.model.set('is_inited', true);
     this.model.save_changes();
   }
@@ -315,11 +315,11 @@ export class MazeView extends DOMWidgetView {
       const $parent =
         this.model.get('floating') || false ? $('body') : $(this.el);
 
-      let $outputArea = $('<div/>', {
-        id: 'outputArea',
-        class: this.model.get('floating') ? `floating ` : `non-floating `,
-      });
-
+      let $outputArea = $(
+        `<div id="outputArea" class="${
+          this.model.get('floating') ? 'floating' : 'non-floating'
+        }" />`
+      );
       $parent.append($outputArea);
     }
   }

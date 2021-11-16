@@ -1,4 +1,5 @@
-DEFAULT_ASSET_URL="https://totogoto.com/assets/python_project/images/"
+# DEFAULT_ASSET_URL="https://totogoto.com/assets/python_project/images/"
+DEFAULT_ASSET_URL="https://cdn.jsdelivr.net/gh/totogoto/assets/"
 DEFAULT_OBJECTS = [
     "1",
     "2",

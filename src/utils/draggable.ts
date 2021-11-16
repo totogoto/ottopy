@@ -28,8 +28,11 @@ export default function dragElement(elmnt: HTMLElement) {
     pos3 = e.clientX;
     pos4 = e.clientY;
     // set the element's new position:
+    elmnt.style.position = 'absolute';
     elmnt.style.top = elmnt.offsetTop - pos2 + 'px';
     elmnt.style.left = elmnt.offsetLeft - pos1 + 'px';
+    elmnt.style.bottom = "unset";
+    elmnt.style.right = "unset";
   }
 
   function closeDragElement() {
