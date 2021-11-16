@@ -56,7 +56,7 @@ module.exports = [
         path: path.resolve(__dirname, 'dist'),
         libraryTarget: 'amd',
         library: "ottopy",
-        publicPath: 'https://cdn.jsdelivr.net/npm/ottopy@' + version + '/dist/'
+        publicPath: 'https://unpkg.com/ottopy@' + version + '/dist/'
     },
     devtool: 'source-map',
     module: {
