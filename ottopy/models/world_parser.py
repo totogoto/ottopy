@@ -15,6 +15,7 @@ class WorldParser:
 
     def parse_world(self):
         self.parse_dimensions()
+        self.parse_project_title()
         self.parse_scene_config()
         self.parse_tilemaps()
         self.parse_walls()
@@ -133,3 +134,6 @@ class WorldParser:
 
     def parse_description(self):
         self.world.add_description(self.config.get("description"))
+
+    def parse_project_title(self):
+        self.world.project_title = self.config.get("title")

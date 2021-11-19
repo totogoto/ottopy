@@ -189,6 +189,7 @@ class WorldModel():
         self.errors = []
         self.goals = []
         self.description = None
+        self.project_title = None
         self.set_dimensions(10, 10)
         self.options = {'MAX_INSTRUCTION_COUNT': 1000}
         self.instruction_count = 0

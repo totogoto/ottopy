@@ -2,9 +2,11 @@ from .maze import Maze
 from .models.world_model import WorldModel
 import time
 import ipykernel
+from string import Template
+
 MAJ_VERSION = int(ipykernel.__version__.split(".")[0])
 
-html_template = """
+html_template = Template("""
 <!doctype html>
 <html>
 <head>
@@ -14,16 +16,21 @@ html_template = """
 </head>
 <body>
   <div id="runner_body">
-    <button onclick="play()"> Play </button>
+    <div class="runner-header">
+      <span class="h3">Project: $project_name</span>
+      <button class="play-btn" onclick="play()"> Play </button>
+    </div>
   </div>
   <script src="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner/dist/runner.js"></script>
   <script> 
   let steps = []
   function play(){
-    steps.map(s => runner._js_call(s))
+    $('#outputArea').remove()
+    const instance = new Runner()
+    steps.map(s => instance._js_call(s))
   } 
   </script>
-"""
+""")
 
 
 def get_robo_builder(**kwargs):
@@ -78,17 +85,19 @@ def get_robo_builder(**kwargs):
         else: 
             print("ipykernel is outdated . should be >=6.0")
 
-    def create_html_file():
-        with open('runner.html', 'w') as f:
-            f.write(html_template)
+    def create_html_file(project_name):
+        with open('last_run.html', 'w') as f:
+            f.write(html_template.safe_substitute(project_name=project_name))
 
 
     def wait_for_bot(level, floating=False, zoom=None, wait=1, gen_html=False):
         bot = get_bot(level, floating, zoom, gen_html=gen_html)
         maze = bot.world
+
         wait_for_init(wait)
         if gen_html:
-            create_html_file()
+            project_name =  maze.model.project_name if maze.model.project_name else level
+            create_html_file(project_name=project_name)
       
         maze.redraw_all()
         bot.set_trace('red')

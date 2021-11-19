@@ -133,7 +133,7 @@ class Maze(DOMWidget):
 
     def add_to_html(self, params):
         script = f"<script>steps.push({json.dumps(params)})</script>"
-        with open('runner.html', 'a') as f:
+        with open('last_run.html', 'a') as f:
             f.write(script)
 
  
