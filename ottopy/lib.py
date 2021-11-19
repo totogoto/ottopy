@@ -4,6 +4,27 @@ import time
 import ipykernel
 MAJ_VERSION = int(ipykernel.__version__.split(".")[0])
 
+html_template = """
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>OttoPy Output Runner</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner/public/css/style.css">
+</head>
+<body>
+  <div id="runner_body">
+    <button onclick="play()"> Play </button>
+  </div>
+  <script src="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner/dist/runner.js"></script>
+  <script> 
+  let steps = []
+  function play(){
+    steps.map(s => runner._js_call(s))
+  } 
+  </script>
+"""
+
 
 def get_robo_builder(**kwargs):
 
@@ -24,14 +45,14 @@ def get_robo_builder(**kwargs):
         fn = robo_fn.get(level, blank)
         fn(bot)
 
-    def generate_maze(level, floating=False, zoom=None):
+    def generate_maze(level, floating=False, zoom=None, gen_html=False):
         world = load_world(level, floating=floating)
-        maze = Maze(world, floating=floating, zoom=zoom)
+        maze = Maze(world, floating=floating, zoom=zoom, gen_html=gen_html)
         bot_init(maze, level)
         return maze
 
-    def get_bot(level, floating=False, zoom=None):
-        maze = generate_maze(level, floating=floating, zoom=zoom)
+    def get_bot(level, floating=False, zoom=None, gen_html=False):
+        maze = generate_maze(level, floating=floating, zoom=zoom, gen_html=gen_html)
         bot = maze.bot()
         return bot
 
@@ -57,12 +78,17 @@ def get_robo_builder(**kwargs):
         else: 
             print("ipykernel is outdated . should be >=6.0")
 
+    def create_html_file():
+        with open('runner.html', 'w') as f:
+            f.write(html_template)
 
-    def wait_for_bot(level, floating=False, zoom=None, wait=1):
-        bot = get_bot(level, floating, zoom)
+
+    def wait_for_bot(level, floating=False, zoom=None, wait=1, gen_html=False):
+        bot = get_bot(level, floating, zoom, gen_html=gen_html)
         maze = bot.world
-      
         wait_for_init(wait)
+        if gen_html:
+            create_html_file()
       
         maze.redraw_all()
         bot.set_trace('red')

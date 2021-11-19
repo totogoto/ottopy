@@ -30,6 +30,8 @@ def print_desc(msg, color="black"):
         display(html_print(cstr(msg, color=color)))
 
 
+
+
 class Maze(DOMWidget):
     """TODO: Add docstring here
     """
@@ -44,6 +46,8 @@ class Maze(DOMWidget):
     method_return = Unicode('{}').tag(sync=True)
     floating = Bool(False).tag(sync=True)
     is_inited = Bool(False).tag(sync=True)
+    gen_html = Bool(False).tag(sync=True) 
+
 
     zoom = Float(1.0).tag(sync=True)
     
@@ -75,20 +79,25 @@ class Maze(DOMWidget):
         if self.model.has_balance():
             bot = self.bot()
             stats = bot.stats.report() if bot is not None else {}
-
-            self.current_call = json.dumps(
-                {'method_name': method_name, 'params': params, 'cb': cb, 'stats': stats, 'ui_id': self.model.ui_id})
+            data = {'method_name': method_name, 'params': params, 'cb': cb, 'stats': stats, 'ui_id': self.model.ui_id} 
+            self.current_call = json.dumps(data)
+            if self.gen_html :
+                self.add_to_html(data)
         else:
             self.current_call = json.dumps(
                 {'method_name': 'halt', 'params': [], 'cb': cb, 'ui_id': self.model.ui_id})
+            
+            if self.gen_html:
+                self.add_to_html({'method_name': 'halt', 'params': [], 'cb': cb, 'ui_id': self.model.ui_id})
             raise RuntimeError("Instruction Quota Exceeded")
 
-    def __init__(self, model, floating=False, zoom=None):
+    def __init__(self, model, floating=False, zoom=None, gen_html=False):
 
         super(Maze, self).__init__()
         global zoom_level
         self.model = model
         self.floating = floating
+        self.gen_html = gen_html
         self.is_inited = False
         self.zoom = zoom or zoom_level
         self.robots = [Robot(idx, x, self)
@@ -119,3 +128,12 @@ class Maze(DOMWidget):
         else:
             self.js_call('error', ["🤭 One Or More Goal are Not Completed."])
         return val
+
+
+
+    def add_to_html(self, params):
+        script = f"<script>steps.push({json.dumps(params)})</script>"
+        with open('runner.html', 'a') as f:
+            f.write(script)
+
+ 
