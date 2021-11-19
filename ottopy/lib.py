@@ -96,7 +96,7 @@ def get_robo_builder(**kwargs):
 
         wait_for_init(wait)
         if gen_html:
-            project_name =  maze.model.project_name if maze.model.project_name else level
+            project_name =  maze.model.project_title if maze.model.project_title else level
             create_html_file(project_name=project_name)
       
         maze.redraw_all()
