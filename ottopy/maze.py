@@ -126,7 +126,7 @@ class Maze(DOMWidget):
         if val:
             self.js_call('set_succes_msg', ['🎉 Task Completed'])
         else:
-            self.js_call('error', ["🤭 One Or More Goal are Not Completed."])
+            self.js_call('error', ["🤭 One Or More goals are Not Completed."])
         return val
 
 

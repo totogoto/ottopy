@@ -141,6 +141,7 @@
 }
 #outputArea .konva-body {
   flex: 1;
+  background-color: #fff;
 }
 #outputArea .alert {
   margin-top: 0.4rem;

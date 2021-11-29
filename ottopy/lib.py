@@ -12,7 +12,7 @@ html_template = Template("""
 <head>
   <meta charset="UTF-8">
   <title>OttoPy Output Runner</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner/public/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner@latest/public/css/style.css">
 </head>
 <body>
   <div id="runner_body">
@@ -21,7 +21,7 @@ html_template = Template("""
       <button class="play-btn" onclick="play()"> Play </button>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner/dist/runner.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/totogoto/ottopy_runner@latest/dist/runner.js"></script>
   <script> 
   let steps = []
   function play(){
